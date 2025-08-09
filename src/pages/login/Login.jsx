@@ -32,7 +32,7 @@ const Login = () => {
               <Link to="/login-email">
                 <Styled.EmailLogin>이메일로 로그인</Styled.EmailLogin>
               </Link>
-              <Link to="/kakao-login">
+              <Link to="/join-membership">
                 <Styled.Signup>회원가입</Styled.Signup>
               </Link>
             </Styled.AuthLinks>
