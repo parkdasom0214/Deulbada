@@ -7,7 +7,6 @@ export const LoginContainer = styled.section`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-
 `;
 export const Login = styled.section`
   display: flex;
@@ -27,9 +26,9 @@ export const SocialSection = styled.section`
   background-color: #fff;
   border-radius: 16px 16px 0px 0px;
   width: 100%;
-  max-width: 64rem; 
+  max-width: 53.4rem; 
   height: 38%;
-  padding: 50px;
+  padding-top: 50px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -48,6 +47,7 @@ export const KakaoButton = styled.button`
   align-items: center;
   justify-content: center;
   width: calc(100vw - 22%);
+  max-width: 45rem;
 `;
 
 export const KakaoIcon = styled.img`
@@ -71,6 +71,7 @@ export const GmailButton = styled.button`
   align-items: center;
   justify-content: center;
   width: calc(100vw - 22%);
+  max-width: 45rem;
 `;
 
 export const GmailIcon = styled.img`
@@ -94,6 +95,7 @@ export const FacebookButton = styled.button`
   align-items: center;
   justify-content: center;
   width: calc(100vw - 22%);
+  max-width: 45rem;
 `;
 
 export const FacebookIcon = styled.img`
