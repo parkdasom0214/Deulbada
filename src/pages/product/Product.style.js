@@ -7,6 +7,23 @@ export const Form = styled.form`
   padding: 0 3.4rem;
 `;
 
+export const ProductHeaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0 0 0;
+  & button:last-child {
+    margin-left: auto;
+  }
+`;
+
+export const Border = styled.div`
+  border-bottom: 1px solid #e5e5e5;
+  margin-left: -3.4rem;
+  margin-right: -3.4rem;
+  margin-bottom: 1.05rem;
+`;
+
 export const H2 = styled.h2`
 `;
 
@@ -25,6 +42,7 @@ export const ImageUploadWrapper = styled.label`
   border-radius: 8px;
   cursor: pointer;
   overflow: hidden;
+  margin-bottom: 2.0rem;
   background-color: ${({ theme }) => theme.colors.white200};
 
   img {

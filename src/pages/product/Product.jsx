@@ -1,13 +1,41 @@
 import * as Styled from './product.style';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ImageIcon } from '../../components/icon/Icons';
+import DefaultHeader from '../../components/header/defaultHeader/DefaultHeader';
+import { useLocation } from 'react-router-dom';
 
 const Product = () => {
+  const location = useLocation();  
   const [preview, setPreview] = useState(null);
   const [businessType, setBusinessType] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState([]);
   const [price, setPrice] = useState('');
+  const [name, setName] = useState('');            
+  const [link, setLink] = useState('');  
+
+  const onHeaderAction = (actionKey) => {
+    if (actionKey === 'saveProfile') {
+      saveProfileData();
+    }
+  };
+
+  const saveProfileData = async () => {
+    const payload = {
+      name,
+      price: price.replaceAll(',', ''),
+      link,
+      tags,
+      category: businessType,
+      hasImage: !!preview,
+    };
+    if (!payload.name.trim()) return alert('상품명을 입력해 주세요.');
+    if (!payload.price.trim()) return alert('가격을 입력해 주세요.');
+
+    console.log('상품 저장 요청:', payload);
+    await new Promise(r => setTimeout(r, 600)); // TODO: API 연동
+    alert('상품이 저장되었습니다.');
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault(); 
@@ -29,6 +57,10 @@ const Product = () => {
   setTags((prev) => prev.filter((tag) => tag !== removeTag));
 };
 
+  useEffect(() => {
+    return () => { if (preview) URL.revokeObjectURL(preview); };
+  }, [preview]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -48,6 +80,12 @@ const Product = () => {
 
   return (
   <Styled.Form onSubmit={handleSubmit}>
+
+    <Styled.ProductHeaderWrapper>
+      <DefaultHeader location={location} onAction={onHeaderAction} />
+    </Styled.ProductHeaderWrapper>
+
+    <Styled.Border></Styled.Border>
 
     <Styled.H2 className="text-ir">상품등록</Styled.H2>
 
@@ -77,7 +115,10 @@ const Product = () => {
         id="name" 
         type="text" 
         placeholder="2~15자 이내여야 합니다."
-        maxLength={15} />
+        maxLength={15}
+        value={name}                             
+        onChange={(e) => setName(e.target.value)} 
+      />
     </Styled.InputGroup>
 
     <Styled.InputGroup>
@@ -93,7 +134,13 @@ const Product = () => {
 
     <Styled.InputGroup>
       <Styled.Label htmlFor="link">판매링크</Styled.Label>
-      <Styled.InputText id="link" type="url" placeholder="URL을 입력해 주세요." />
+      <Styled.InputText 
+        id="link" 
+        type="url" 
+        placeholder="URL을 입력해 주세요." 
+        value={link}
+        onChange={(e) => setLink(e.target.value)}
+      />
     </Styled.InputGroup>
 
     <Styled.InputGroup>
@@ -119,7 +166,7 @@ const Product = () => {
     </Styled.InputGroup>
 
     <Styled.InputGroup>
-      <Styled.Label htmlFor="category">카테고리</Styled.Label>
+      <Styled.Label htmlFor="business-type">카테고리</Styled.Label>
         <Styled.Select
           id="business-type"
           value={businessType}
