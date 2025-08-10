@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from './api';
 
 // GET: 전체 게시물 조회
 export const fetchPosts = () => axiosInstance.get('/posts');

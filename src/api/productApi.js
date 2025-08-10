@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from './api';
 
 // GET: 전체 상품 조회
 export const fetchProduct = () => axiosInstance.get('/products/');
