@@ -44,20 +44,50 @@ export async function login(arg1, arg2) {
   if (!email || !password) {
     throw new Error('이메일과 비밀번호는 필수입니다.');
   }
+// 5) 실제 서버 로그인
+console.log('[AuthService] Attempting login with:', { email });
 
-  // 5) 실제 서버 로그인
-  const { data } = await api.post('/api/token/', { email, password });
+// 서버 스펙: POST /api/users/login/ , res: { access, refresh, user_id, email, account_id, message }
+const { data } = await api.post(
+  '/api/users/login/',
+  { email, password },
+  { headers: { 'Content-Type': 'application/json', Accept: 'application/json' } }
+);
 
-  const { access, refresh, user } = data || {};
-  
-  if (!access || !refresh) throw new Error('토큰 없음');
-  
-  // 사용자 정보에서 account_id 추출하여 저장
-  const accountId = user?.account_id || null;
-  setTokens(access, refresh, accountId);
-  
-  console.log('[AuthService] Login successful', { access, refresh, accountId });
-  return { access, refresh, user };
+console.log('[AuthService] Raw server response:', data);
+
+// 토큰/필드 추출
+const { access, refresh } = data || {};
+if (!access || !refresh) throw new Error('토큰 없음');
+
+// account_id는 루트가 기준(없을 수도 있으니 user 객체도 보조로 확인)
+// ⚠️ user_id로 대체하면 안 됩니다(서버의 계정 ID와 내 의미가 다름)
+const finalAccountId = data?.account_id ?? data?.user?.account_id ?? undefined;
+
+// 디버그 로그
+console.log('[AuthService] Checking account_id:', {
+  'data.account_id': data?.account_id,
+  'user.account_id': data?.user?.account_id,
+  'user.user_id': data?.user?.user_id,
+  'user object': data?.user,
+});
+
+// 저장: undefined를 넘기면 tokenStore가 기존 account_id를 유지
+setTokens(access, refresh, finalAccountId);
+
+console.log('[AuthService] Login successful', { 
+  access: access.slice(0, 20) + '...',
+  refresh: refresh.slice(0, 20) + '...',
+  accountId: finalAccountId,
+});
+
+// 호출부 호환용 반환(가능하면 user는 서버 스펙대로 유지)
+return {
+  access,
+  refresh,
+  user: { ...(data.user || {}), account_id: finalAccountId, user_id: data?.user_id, email: data?.email },
+  message: data?.message,
+};
 }
 
 /**
@@ -66,9 +96,11 @@ export async function login(arg1, arg2) {
  * @param {string} userInfo.account_id - 계정 ID (영문으로만 구성)
  */
 export function updateUserInfo(userInfo) {
-  if (userInfo?.account_id) {
-    setAccountId(userInfo.account_id);
-    console.log('[AuthService] User info updated', userInfo);
+  // account_id 또는 user_id 중 하나라도 있으면 저장
+  const accountId = userInfo?.account_id || userInfo?.user_id;
+  if (accountId) {
+    setAccountId(accountId);
+    console.log('[AuthService] User info updated', { ...userInfo, account_id: accountId });
   }
 }
 
@@ -96,10 +128,7 @@ export async function verifyToken() {
  */
 export function logout() {
   console.log('[AuthService] Logging out');
-  clearTokens();
-  if (typeof window !== 'undefined') {
-    window.location.assign('/login');
-  }
+  clearTokens(); 
 }
 
 /**

@@ -236,13 +236,7 @@ const JoinMembership = () => {
       console.log('자동 로그인 성공:', loginResult);
       
       alert('회원가입이 완료되었습니다!');
-      navigate('/profile-settings', { 
-        state: { 
-          account_id: formData.account_id,
-          nickname: formData.nickname,
-          email: formData.email
-        }
-      });
+      navigate('/home');
       
     } catch (error) {
       console.error('회원가입 실패:', error);
